@@ -1,20 +1,32 @@
-# Sleekverse
+<h3 align="center">
+ Sleekverse
+</h3>
+<p align="center">
+	<a href="https://react.dev/">
+		<img src="https://img.shields.io/static/v1?style=for-the-badge&label=&message=React%20JS&colorA=1e1e2e&colorB=61DAFB&logo=react&logoColor=white">
+	</a>
+	<a href="https://appwrite.io/">
+		<img src="https://img.shields.io/static/v1?style=for-the-badge&label=&message=Appwrite&colorA=1e1e2e&colorB=FD366E&logo=appwrite&logoColor=white">
+	</a>
+	<a href="https://tailwindcss.com/">
+		<img src="https://img.shields.io/static/v1?style=for-the-badge&label=&message=Tailwind%20CSS&colorA=1e1e2e&colorB=00BCFF&logo=tailwindcss&logoColor=white">
+	</a>
+	<a href="https://vitejs.dev/">
+		<img src="https://img.shields.io/static/v1?style=for-the-badge&label=&message=Vite&colorA=1e1e2e&colorB=DCB827&logo=vite&logoColor=white">
+	</a>
+</p>
 
-![React](https://img.shields.io/badge/React_JS-61DAFB?style=for-the-badge&logo=react&logoColor=white)
-![Appwrite](https://img.shields.io/badge/Appwrite-FD366E?style=for-the-badge&logo=appwrite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-00BCFF?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-DCB827?style=for-the-badge&logo=vite&logoColor=white)
+<p>
+A modern movie discovery app built with React that lets you search and explore movies using the TMDB API, with trending movies tracking and search analytics.
+</p>
 
+---
 
 <!-- ![Project Banner](BANNER_IMAGE_URL_HERE) -->
 
 ## 🚀 Live Demo
 
 [https://sleekverse.appwrite.network](https://sleekverse.appwrite.network)
-
-## 📖 About
-
-A modern movie discovery app built with React that lets you search and explore movies using the TMDB API, with trending movies tracking and search analytics.
 
 ## ✨ Features
 
@@ -40,6 +52,7 @@ A modern movie discovery app built with React that lets you search and explore m
 ### Installation
 
 1. **Clone and install**
+
 ```bash
 git clone <repository-url>
 cd react-proj
@@ -47,6 +60,7 @@ npm install
 ```
 
 2. **Configure environment**
+
 ```bash
 # Create .env file
 VITE_TMDB_API_KEY=your_tmdb_api_key
@@ -57,6 +71,7 @@ VITE_APPWRITE_COLLECTION_ID=your_collection_id
 ```
 
 3. **Run development server**
+
 ```bash
 npm run dev
 ```
