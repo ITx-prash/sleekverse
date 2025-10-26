@@ -39,7 +39,7 @@ const App = () => {
   const [trendingErrorMessage, setTrendingErrorMessage] = useState("");
 
   //Debounce the search term input to limit API calls by waiting 500ms after user stops typing
-  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 1600, [searchTerm]);
 
   // Function to fetch movies from TMDB API
   const fetchMovies = async (query = "") => {
