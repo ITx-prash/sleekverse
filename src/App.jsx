@@ -4,6 +4,7 @@ import axios from "axios";
 import Search from "./components/Search";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
+import { updateSearchCount } from "./utils/updateSearchCount";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -36,7 +37,13 @@ const App = () => {
 
       const response = await axios.get(endpoint, API_OPTIONS);
 
-      setMovieList(response.data.results);
+      //using the short-circuiting to handle cases where response.data.results might be undefined
+      setMovieList(response.data.results || []);
+
+      // Call the function to update search count in Appwrite database
+      if (query && response.data.results.length > 0) {
+        await updateSearchCount(query, response.data.results[0]);
+      }
     } catch (error) {
       setErrorMessage("Error fetching movies. Please try again later.");
       setMovieList([]);
@@ -49,8 +56,6 @@ const App = () => {
   useEffect(() => {
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
-
-  console.log(movieList);
 
   return (
     <main>
@@ -66,7 +71,7 @@ const App = () => {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
         <section className="all-movies">
-          <h2 className="mt-[40px]">All Movies </h2>
+          <h2 className="mt-10">All Movies </h2>
           {isLoading ? (
             <CircleDashed
               className="animate-spin text-blue-400"
