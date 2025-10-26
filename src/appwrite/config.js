@@ -8,4 +8,4 @@ const client = new Client()
   .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID);
 
 const tablesDB = new TablesDB(client);
-export { tablesDB, PROJECT_ID, DATABASE_ID, TABLE_ID, Query, ID };
+export { client, tablesDB, PROJECT_ID, DATABASE_ID, TABLE_ID, Query, ID };
