@@ -26,6 +26,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [isTrendingLoading, setIsTrendingLoading] = useState(false);
 
   //Debounce the search term input to limit API calls by waiting 500ms after user stops typing
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
@@ -60,10 +61,13 @@ const App = () => {
   // Function to load trending movies on initial render
   const loadTrendingMovies = async () => {
     try {
+      setIsTrendingLoading(true);
       const movies = await getTrendingMovies();
       setTrendingMovies(movies);
     } catch (error) {
       console.error("Error fetching trending movies:", error);
+    } finally {
+      setIsTrendingLoading(false);
     }
   };
 
@@ -88,21 +92,29 @@ const App = () => {
           </h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
-
-        {trendingMovies.length > 0 && (
-          <section className="trending">
-            <h2>Trending Movies</h2>
-            <ul>
-              {trendingMovies.map((movie, index) => (
-                <li key={movie.$id}>
-                  <p>{index + 1}</p>
-                  <img src={movie.posterUrl} alt={movie.title} />
-                </li>
-              ))}
-            </ul>
-          </section>
+        //I am not sure like the loader should be there before the trending
+        movies loads or what if there are no movies in the Appwrite db
+        {isTrendingLoading ? (
+          <CircleDashed
+            className="animate-spin text-blue-400"
+            size={35}
+            strokeWidth={2.4}
+          />
+        ) : (
+          trendingMovies.length > 0 && (
+            <section className="trending">
+              <h2>Trending Movies</h2>
+              <ul>
+                {trendingMovies.map((movie, index) => (
+                  <li key={movie.$id}>
+                    <p>{index + 1}</p>
+                    <img src={movie.posterUrl} alt={movie.title} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
         )}
-
         <section className="all-movies">
           <h2>All Movies </h2>
 
