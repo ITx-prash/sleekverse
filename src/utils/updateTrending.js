@@ -8,10 +8,10 @@ const updateTrendingMovies = async () => {
       tableId: TABLE_ID,
       queries: [Query.limit(5), Query.orderDesc("count")],
     });
-    console.log(result.rows);
     return result.rows;
   } catch (error) {
     console.error("Error fetching Trending movies from Appwrite:", error);
+    throw error;
   }
 };
 
