@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { CircleDashed } from "lucide-react";
 import axios from "axios";
+import { CircleDashed } from "lucide-react";
 import Search from "./components/Search";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
-import { updateSearchCount } from "./utils/updateCount";
+import { updateSearchMetrics } from "./utils/updateSearchMetrics";
 import getTrendingMovies from "./utils/updateTrending";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -18,15 +18,25 @@ const API_OPTIONS = {
 };
 
 const App = () => {
+  // TODO:
+  /*
+  1. implement error boundary for the whole page when both request fails~kinda
+  2. show a friendly fallback UI with an option to retry fetching data
+  3. add pagination or infinite scroll for movie list
+  4. improve accessibility features
+  5. write unit and integration tests
+  */
+
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const [movieList, setMovieList] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchErrorMessage, setSearchErrorMessage] = useState("");
 
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [isTrendingLoading, setIsTrendingLoading] = useState(false);
+  const [trendingErrorMessage, setTrendingErrorMessage] = useState("");
 
   //Debounce the search term input to limit API calls by waiting 500ms after user stops typing
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
@@ -34,7 +44,7 @@ const App = () => {
   // Function to fetch movies from TMDB API
   const fetchMovies = async (query = "") => {
     setIsLoading(true);
-    setErrorMessage("");
+    setSearchErrorMessage("");
     try {
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
@@ -47,10 +57,10 @@ const App = () => {
 
       // Call the function to update search count in Appwrite database
       if (query && response.data.results.length > 0) {
-        await updateSearchCount(query, response.data.results[0]);
+        await updateSearchMetrics(query, response.data.results[0]);
       }
     } catch (error) {
-      setErrorMessage("Error fetching movies. Please try again later.");
+      setSearchErrorMessage("Failed to load movies. Please try again later.");
       setMovieList([]);
       console.error(`Error Fetching movies: ${error}`);
     } finally {
@@ -62,10 +72,13 @@ const App = () => {
   const loadTrendingMovies = async () => {
     try {
       setIsTrendingLoading(true);
+      setTrendingErrorMessage("");
       const movies = await getTrendingMovies();
-      setTrendingMovies(movies);
+      setTrendingMovies(movies || []);
     } catch (error) {
       console.error("Error fetching trending movies:", error);
+      setTrendingErrorMessage("Failed to load trending movies.");
+      setTrendingMovies([]);
     } finally {
       setIsTrendingLoading(false);
     }
@@ -92,18 +105,22 @@ const App = () => {
           </h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
-        //I am not sure like the loader should be there before the trending
-        movies loads or what if there are no movies in the Appwrite db
-        {isTrendingLoading ? (
-          <CircleDashed
-            className="animate-spin text-blue-400"
-            size={35}
-            strokeWidth={2.4}
-          />
-        ) : (
-          trendingMovies.length > 0 && (
+
+        {/* Trending Movies Section */}
+        <section className="my-6">
+          <h2>Trending Movies</h2>
+          {isTrendingLoading ? (
+            <CircleDashed
+              className="animate-spin text-blue-400 mt-5"
+              size={35}
+              strokeWidth={2.4}
+            />
+          ) : trendingErrorMessage ? (
+            <p className="text-red-500 md:text-lg mt-3">
+              {trendingErrorMessage}
+            </p>
+          ) : trendingMovies.length > 0 ? (
             <section className="trending">
-              <h2>Trending Movies</h2>
               <ul>
                 {trendingMovies.map((movie, index) => (
                   <li key={movie.$id}>
@@ -113,8 +130,14 @@ const App = () => {
                 ))}
               </ul>
             </section>
-          )
-        )}
+          ) : (
+            <p className="text-gray-500 mt-2 text-lg">
+              No trending movies available currently.
+            </p>
+          )}
+
+          {/* All Movies Section */}
+        </section>
         <section className="all-movies">
           <h2>All Movies </h2>
 
@@ -124,8 +147,8 @@ const App = () => {
               size={35}
               strokeWidth={2.4}
             />
-          ) : errorMessage ? (
-            <p className="text-red-500">{errorMessage}</p>
+          ) : searchErrorMessage ? (
+            <p className="text-red-500 md:text-lg">{searchErrorMessage}</p>
           ) : (
             <ul>
               {movieList.map((movie) => (
